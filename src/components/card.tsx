@@ -12,7 +12,7 @@ interface MovieProps {
   overview: string;
   originalLanguage: string;
   posterPath: string;
-  onClick: Function;
+  onClick: (a: number, b: string) => void;
   isOnboarding?: boolean;
 }
 
