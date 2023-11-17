@@ -17,6 +17,7 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  ignoreDuringBuilds: true,
 };
 
 export default config;
