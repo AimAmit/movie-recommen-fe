@@ -23,6 +23,19 @@ const customStyles = {
   },
 };
 
+interface MovieInterface {
+  poster_path: string;
+  id: number;
+  title: string;
+  genres: { id: number; name: string }[];
+  overview: string;
+  original_language: string;
+}
+
+interface RecommendResponse {
+  data: MovieInterface[];
+}
+
 function shuffleArray<T>(array: (T | undefined)[]): (T | undefined)[] {
   const shuffledArray = [...array];
 
@@ -41,27 +54,24 @@ export default function Home() {
 
   const isLoggedIn = !!session.data;
 
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<MovieInterface[]>([]);
   const [eolMovies, setEolMovies] = useState<any[]>([]);
   const [eolMoviesIdx, setEolMoviesIdx] = useState(0);
 
   const [modalIsOpen, setModelIsOpen] = useState(false);
 
-  const onMovieCardClick = (id: number, userInput: string = 'like') => {
+  const onMovieCardClick = (id: number, userInput: string = "like") => {
     console.log("onMovieCardClick", id, userInput);
 
     let userId = localStorage.getItem("movie:userId");
     if (userId == null) {
       userId = crypto.randomUUID();
       console.log("userId", userId);
-
-      
     }
 
-    fetch(`http://54.196.68.6:8080/user/${userId}/log?${userInput}=${id}`).then(
-      () => localStorage.setItem("movie:userId", userId!)
-    ).catch(console.log);
-    
+    fetch(`http://54.196.68.6:8080/user/${userId}/log?${userInput}=${id}`)
+      .then(() => localStorage.setItem("movie:userId", userId!))
+      .catch(console.log);
   };
 
   // let movieOnboardingCard = <></>;
@@ -70,8 +80,10 @@ export default function Home() {
 
   const fetchMovies = async (userId: string | number) => {
     try {
-      let res = await fetch(`http://54.196.68.6:8080/user/${userId}/recommend`);
-      res = await res.json();
+      let rawRes = await fetch(
+        `http://54.196.68.6:8080/user/${userId}/recommend`,
+      );
+      let res = (await rawRes.json()) as RecommendResponse;
       console.log("res", res);
       setMovies(res.data);
     } catch (e) {
@@ -192,18 +204,17 @@ export default function Home() {
       {movieOnboardingCard}
 
       <main className="container mx-auto mb-24 mt-4 flex min-h-screen flex-col gap-2 px-8">
-      <div className="grid grid-cols-3 gap-2 md:grid-cols-4 xl:grid-cols-6">
+        <div className="grid grid-cols-3 gap-2 md:grid-cols-4 xl:grid-cols-6">
           {movies.map((movie) => (
             <Card
-            posterPath={movie.poster_path}
-            id={movie.id}
-            title={movie.title}
-            genres={movie.genres}
-            overview={movie.overview}
-            originalLanguage={movie.original_language}
-            onClick={onMovieCardClick}
-          />
-            
+              posterPath={movie.poster_path}
+              id={movie.id}
+              title={movie.title}
+              genres={movie.genres}
+              overview={movie.overview}
+              originalLanguage={movie.original_language}
+              onClick={onMovieCardClick}
+            />
           ))}
         </div>
       </main>
