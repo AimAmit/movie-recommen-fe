@@ -69,7 +69,7 @@ export default function Home() {
       console.log("userId", userId);
     }
 
-    fetch(`http://54.196.68.6:8080/user/${userId}/log?${userInput}=${id}`)
+    fetch(`/api/proxy/user/${userId}/log?${userInput}=${id}`)
       .then(() => localStorage.setItem("movie:userId", userId!))
       .catch(console.log);
   };
@@ -80,9 +80,7 @@ export default function Home() {
 
   const fetchMovies = async (userId: string | number) => {
     try {
-      let rawRes = await fetch(
-        `http://54.196.68.6:8080/user/${userId}/recommend`,
-      );
+      let rawRes = await fetch(`/api/proxy/user/${userId}/recommend`);
       let res = (await rawRes.json()) as RecommendResponse;
       console.log("res", res);
       setMovies(res.data);
